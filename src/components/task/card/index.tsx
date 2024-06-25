@@ -7,19 +7,25 @@ import trash from '../../../assets/trash.png'
 import checked from '../../../assets/checked.png'
 import unchecked from '../../../assets/unchecked.png'
 
+import { TaskProps } from '../../../screens/Home/index'
+
 type CardProps = {
-    text: string
+    task: TaskProps
     removeButton: () => void
-    toggleStatusButton: (status: boolean) => void
+    toggleStatusButton: (task: TaskProps) => void
 }
 
-export function Card({ text, removeButton, toggleStatusButton }: CardProps) {
+export function Card({ task, removeButton, toggleStatusButton }: CardProps) {
 
     const [isCompleted, setIsCompleted] = useState(false)
 
     function handleToggleStatusButton() {
         setIsCompleted(prevState => {
-            toggleStatusButton(!prevState)
+            toggleStatusButton({
+                name: task.name,
+                completed: !prevState
+            })
+
             return !prevState
         })
     }
@@ -37,7 +43,7 @@ export function Card({ text, removeButton, toggleStatusButton }: CardProps) {
             </TouchableOpacity>
             <ScrollView style={styles.textContainer} showsVerticalScrollIndicator={false}>
                 <Text style={[styles.text, isCompleted ? styles.completedText : styles.text ]}>
-                    {text}
+                    {task.name}
                 </Text>
             </ScrollView>
             <TouchableOpacity onPress={handleRemoveButton}>

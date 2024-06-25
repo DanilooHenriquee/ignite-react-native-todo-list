@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Text, View, Image, Alert, FlatList } from 'react-native'
 
 import { styles } from './styles'
@@ -9,36 +9,47 @@ import clipboard from '../../assets/clipboard.png'
 import { Input } from '../../components/Input'
 import { Card } from '../../components/task/card'
 
+export type TaskProps = {
+    name: string
+    completed: boolean
+}
+
 export function Home() {
     const [createdTask, setCreatedTask] = useState(0)
     const [completedTask, setCompletedTask] = useState(0)
-    const [tasks, setTasks] = useState<string[]>([])
+    const [tasks, setTasks] = useState<TaskProps[]>([])
 
     function addTask(taskName: string) {
-        if (tasks.includes(taskName))
+        if (tasks.find(task => task.name == taskName))
             return Alert.alert('Task already exists!')
 
         setCreatedTask(prevState => prevState + 1)
 
-        setTasks(prevState => [...prevState, taskName])
+        setTasks(prevState => [...prevState, {
+            name: taskName,
+            completed: false
+        }])
     }
 
-    function removeTask(taskName: string) {
+    function removeTask(task: TaskProps) {
         setCreatedTask(prevState => prevState - 1)
 
-        const result = tasks.filter(task => task !== taskName)
+        if (task.completed)
+            setCompletedTask(prevState => prevState - 1)
+
+        const result = tasks.filter(item => item.name !== task.name)
 
         setTasks(result)
     }
 
-    function toggleStatus(status: boolean) {
+    function toggleStatus(task: TaskProps) {
+        const result = tasks.map(item => (item.name === task.name) ? task : item)
 
-        console.log("Status: ", status)
+        const value = task.completed ? 1 : -1
 
-        if (status)
-            setCompletedTask(prevState => prevState + 1)
-        else
-            setCompletedTask(prevState => prevState - 1)
+        setCompletedTask(prevState => prevState + value)
+
+        setTasks(result)
     }
 
     return (
@@ -70,11 +81,11 @@ export function Home() {
 
                 <FlatList 
                     data={tasks}
-                    keyExtractor={item => item}
+                    keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
-                    renderItem={({item}) => 
+                    renderItem={({item, index}) => 
                         <Card
-                            text={item}
+                            task={item}
                             removeButton={() => removeTask(item)}
                             toggleStatusButton={toggleStatus}
                         />
