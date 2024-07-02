@@ -23,6 +23,11 @@ export function Home() {
         if (tasks.find(task => task.name == taskName))
             return Alert.alert('Task already exists!')
 
+        taskName = taskName.trim()
+
+        if (!taskName)
+            return
+
         setCreatedTask(prevState => prevState + 1)
 
         setTasks(prevState => [...prevState, {
@@ -81,9 +86,9 @@ export function Home() {
 
                 <FlatList 
                     data={tasks}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item) => item.name}
                     showsVerticalScrollIndicator={false}
-                    renderItem={({item, index}) => 
+                    renderItem={({item}) => 
                         <Card
                             task={item}
                             removeButton={() => removeTask(item)}

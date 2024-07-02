@@ -20,14 +20,13 @@ export function Card({ task, removeButton, toggleStatusButton }: CardProps) {
     const [isCompleted, setIsCompleted] = useState(false)
 
     function handleToggleStatusButton() {
-        setIsCompleted(prevState => {
-            toggleStatusButton({
-                name: task.name,
-                completed: !prevState
-            })
-
-            return !prevState
+        toggleStatusButton({
+            name: task.name,
+            completed: !isCompleted
         })
+
+        setIsCompleted(prevState => !prevState)
+
     }
 
     function handleRemoveButton() {
